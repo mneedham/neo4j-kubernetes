@@ -159,7 +159,8 @@ Bye!
 
 For the core servers we're using a Kubernetes alpha feature called link:http://kubernetes.io/docs/user-guide/petset/[PetSets].
 This is helpful because Neo4j Core Servers need to discover each other so that they can take participate in a consensus commit algorithm.
-We therefore need to know the hostnames of these servers so that we can specify it in the config files.
+We therefore need to know the hostnames of these servers so that we can specify it in the config file.
 
 
 For the read replicas we don't have this constraint so we can use the standard link:http://kubernetes.io/docs/user-guide/replication-controller/[replication controller] approach.
+Read Replicas list the hostnames of Core Servers in their config file.
