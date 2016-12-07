@@ -1,0 +1,61 @@
+# Replicas
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: neo4j-replica
+spec:
+  replicas: 1
+  selector:
+    app: neo4j-replica
+  template:
+    metadata:
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+        pod.beta.kubernetes.io/init-containers: '[
+            {
+                "name": "install",
+                "image": "gcr.io/google_containers/busybox:1.24",
+                "command": ["/bin/sh", "-c", "echo \"
+                unsupported.dbms.edition=enterprise\n
+                dbms.security.auth_enabled=false\n
+                dbms.mode=READ_REPLICA\n
+                dbms.connectors.default_advertised_address=$(hostname -f)\n
+                dbms.connectors.default_listen_address=0.0.0.0\n
+                dbms.connector.bolt.type=BOLT\n
+                dbms.connector.bolt.enabled=true\n
+                dbms.connector.bolt.listen_address=0.0.0.0:7687\n
+                dbms.connector.http.type=HTTP\n
+                dbms.connector.http.enabled=true\n
+                dbms.connector.http.listen_address=0.0.0.0:7474\n
+                causal_clustering.raft_messages_log_enable=true\n
+                causal_clustering.initial_discovery_members=neo4j-core-0.neo4j.default.svc.cluster.local:5000,neo4j-core-1.neo4j.default.svc.cluster.local:5000,neo4j-core-2.neo4j.default.svc.cluster.local:5000\n
+                causal_clustering.leader_election_timeout=2s\n
+                  \" > /work-dir/neo4j.conf" ],
+                "volumeMounts": [
+                    {
+                        "name": "confdir",
+                        "mountPath": "/work-dir"
+                    }
+                ]
+            }
+        ]'
+      labels:
+        app: neo4j-replica
+        role: replica
+    spec:
+      containers:
+      - name: neo4j
+        image: "neo4j/neo4j-experimental:3.1.0-RC1-enterprise"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 7474
+          name: browser
+        - containerPort: 7687
+          name: bolt
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: confdir
+          mountPath: /conf
+      volumes:
+      - name: confdir
