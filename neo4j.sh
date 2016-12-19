@@ -3,7 +3,7 @@
 set -exuo pipefail
 
 # Clean up anything from a prior run:
-kubectl delete petsets,pods,persistentvolumes,persistentvolumeclaims,services -l app=neo4j
+kubectl delete statefulsets,pods,persistentvolumes,persistentvolumeclaims,services -l app=neo4j
 
 # Make persistent volumes and (correctly named) claims. We must create the
 # claims here manually even though that sounds counter-intuitive. For details

@@ -15,6 +15,7 @@ spec:
             {
                 "name": "install",
                 "image": "gcr.io/google_containers/busybox:1.24",
+                "imagePullPolicy": "Always",
                 "command": ["/bin/sh", "-c", "echo \"
                 unsupported.dbms.edition=enterprise\n
                 dbms.security.auth_enabled=false\n
@@ -45,7 +46,7 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: "neo4j/neo4j-experimental:3.1.0-RC1-enterprise"
+        image: "neo4j:3.1.0-enterprise"
         imagePullPolicy: Always
         ports:
         - containerPort: 7474

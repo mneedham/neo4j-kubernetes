@@ -1,22 +1,3 @@
-# Load balancer so we can access machines from outside
-apiVersion: v1
-kind: Service
-metadata:
-  name: neo4j-public
-  labels:
-    app: neo4j
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 7687
-    targetPort: 7687
-    name: bolt
-  - port: 7474
-    targetPort: 7474
-    name: browser
-  selector:
-    app: neo4j
----
 # Headless service to provide DNS lookup
 apiVersion: v1
 kind: Service
@@ -31,10 +12,10 @@ spec:
       targetPort: 7474
   selector:
     app: neo4j
-----
+---
 # Core servers
-apiVersion: "apps/v1alpha1"
-kind: PetSet
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
 metadata:
   name: neo4j-core
 spec:
@@ -78,7 +59,7 @@ spec:
     spec:
       containers:
       - name: neo4j
-        image: "neo4j/neo4j-experimental:3.1.0-RC1-enterprise"
+        image: "neo4j:3.1.0-enterprise"
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

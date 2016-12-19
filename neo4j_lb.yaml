@@ -1,0 +1,18 @@
+# Load balancer so we can access machines from outside
+apiVersion: v1
+kind: Service
+metadata:
+  name: neo4j-public
+  labels:
+    app: neo4j
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 7687
+    targetPort: 7687
+    name: bolt
+  - port: 7474
+    targetPort: 7474
+    name: browser
+  selector:
+    app: neo4j
