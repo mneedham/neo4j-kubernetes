@@ -1,0 +1,70 @@
+# Headless service to provide DNS lookup
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: neo4j
+  name: neo4j
+spec:
+  clusterIP: None
+  ports:
+    - port: 7474
+      targetPort: 7474
+  selector:
+    app: neo4j
+---
+# Core servers
+apiVersion: "apps/v1beta1"
+kind: StatefulSet
+metadata:
+  name: neo4j-core
+spec:
+  serviceName: neo4j
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: neo4j
+        role: core
+    spec:
+      containers:
+      - name: neo4j
+        image: "neo4j:3.1.0-enterprise"
+        imagePullPolicy: Always
+        env:
+          - name: NEO4J_dbms_mode
+            value: "CORE"
+          - name: NEO4J_causalClustering_initialDiscoveryMembers
+            value: "neo4j-core-0.neo4j.default.svc.cluster.local:5000,neo4j-core-1.neo4j.default.svc.cluster.local:5000,neo4j-core-2.neo4j.default.svc.cluster.local:5000"
+        command: ["/bin/sh","-c"]
+        args: ["export NEO4J_dbms_connectors_defaultAdvertisedAddress=`hostname -f` && \
+                export NEO4J_causalClustering_discoveryAdvertisedAddress=`hostname -f`:5000 && \
+                export NEO4J_causalClustering_transactionAdvertisedAddress=`hostname -f`:6000 && \
+                export NEO4J_causalClustering_raftAdvertisedAddress=`hostname -f`:7000 && \
+                exec /docker-entrypoint.sh \"neo4j\""]
+        ports:
+        - containerPort: 5000
+          name: discovery
+        - containerPort: 6000
+          name: tx
+        - containerPort: 7000
+          name: raft
+        - containerPort: 7474
+          name: browser
+        - containerPort: 7687
+          name: bolt
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: datadir
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

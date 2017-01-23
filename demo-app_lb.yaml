@@ -1,0 +1,15 @@
+# Load balancer so we can access machines from outside
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-public
+  labels:
+    app: neo4j-demo-app
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 4567
+    targetPort: 4567
+    name: app
+  selector:
+    app: neo4j-demo-app

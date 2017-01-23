@@ -1,0 +1,25 @@
+# Replicas
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: neo4j-demo-app
+spec:
+  replicas: 1
+  selector:
+    app: neo4j-demo-app
+  template:
+    metadata:
+      labels:
+        app: neo4j-demo-app
+    spec:
+      containers:
+      - name: markhneedham
+        image: "markhneedham/neo4j-demo-app"
+        env:
+          - name: NEO4J_CONNECTION_STRING
+            value: "bolt+routing://neo4j-core-0.neo4j.default.svc.cluster.local:7687"
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+      volumes:
+      - name: confdir

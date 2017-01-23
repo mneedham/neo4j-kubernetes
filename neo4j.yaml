@@ -1,18 +1,3 @@
-# Headless service to provide DNS lookup
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: neo4j
-  name: neo4j
-spec:
-  clusterIP: None
-  ports:
-    - port: 7474
-      targetPort: 7474
-  selector:
-    app: neo4j
----
 # Core servers
 apiVersion: "apps/v1beta1"
 kind: StatefulSet
