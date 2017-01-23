@@ -1,0 +1,32 @@
+# Replicas
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: neo4j-replica
+spec:
+  replicas: 1
+  selector:
+    app: neo4j-replica
+  template:
+    metadata:
+      labels:
+        app: neo4j-replica
+        role: replica
+    spec:
+      containers:
+      - name: neo4j
+        image: "neo4j:3.1.0-enterprise"
+        imagePullPolicy: Always
+        env:
+          - name: NEO4J_causalClustering_initialDiscoveryMembers
+            value: "neo4j-core-0.neo4j.default.svc.cluster.local:5000,neo4j-core-1.neo4j.default.svc.cluster.local:5000,neo4j-core-2.neo4j.default.svc.cluster.local:5000"
+          - name: NEO4J_dbms_mode
+            value: READ_REPLICA
+        command: ["/bin/bash", "-c", 'export NEO4J_dbms_connectors_defaultAdvertisedAddress=`hostname -f` && exec /docker-entrypoint.sh "neo4j"']
+        ports:
+        - containerPort: 7474
+          name: browser
+        - containerPort: 7687
+          name: bolt
+        securityContext:
+          privileged: true
