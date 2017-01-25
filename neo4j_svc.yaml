@@ -1,4 +1,3 @@
-# Headless service to provide DNS lookup
 apiVersion: v1
 kind: Service
 metadata:
