@@ -167,5 +167,3 @@ We therefore need to know the hostnames of these servers so that we can specify 
 
 For the read replicas we don't have this constraint so we can use the standard link:http://kubernetes.io/docs/user-guide/replication-controller/[replication controller] approach.
 Read Replicas list the hostnames of Core Servers in their config file.
-
-#            value: "bolt://@192.168.1.3:7687"
