@@ -38,10 +38,13 @@ persistentvolumeclaim "datadir-neo4j-core-2" created
 ```
 
 ```
-$ kubectl create -f neo4j.yaml
-service "neo4j-public" created
+$ kubectl create -f neo4j_svc.yaml
 service "neo4j" created
-petset "neo4j-core" created
+```
+
+```
+$ kubectl create -f neo4j_core.yaml
+statefulset "neo4j-core" created
 ```
 
 We can check that those servers have spun up by running:
@@ -88,14 +91,14 @@ Read Replicas are used to scale out reads and they don't accept any write operat
 Run the following command to create a single Read Replica:
 
 ```
-$ kubectl create -f neo4j_replicas.yaml
+$ kubectl create -f neo4j_rr.yaml
 replicationcontroller "neo4j-replica" created
 ```
 
 If we query for the list of pods now we'll see that it's been added to the list:
 
 ```
-m$ kubectl get pods
+$ kubectl get pods
 NAME                  READY     STATUS    RESTARTS   AGE
 neo4j-core-0          1/1       Running   0          4m
 neo4j-core-1          1/1       Running   0          4m
@@ -157,7 +160,7 @@ Bye!
 
 == Bit of explanation
 
-For the core servers we're using a Kubernetes alpha feature called link:http://kubernetes.io/docs/user-guide/petset/[PetSets].
+For the core servers we're using a Kubernetes beta feature introduced in 1.5.0 called link:https://kubernetes.io/docs/concepts/abstractions/controllers/statefulsets/[StatefulSets].
 This is helpful because Neo4j Core Servers need to discover each other so that they can take participate in a consensus commit algorithm.
 We therefore need to know the hostnames of these servers so that we can specify it in the config file.
 
