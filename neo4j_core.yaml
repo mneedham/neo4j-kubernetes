@@ -20,7 +20,7 @@ spec:
             value: "neo4j-core-0.neo4j.default.svc.cluster.local:5000,neo4j-core-1.neo4j.default.svc.cluster.local:5000,neo4j-core-2.neo4j.default.svc.cluster.local:5000"
           - name: NEO4J_dbms_mode
             value: CORE
-        command: ["/bin/bash", "-c", 'export NEO4J_dbms_connectors_defaultAdvertisedAddress=$(hostname -f) && export NEO4J_causalClustering_discoveryAdvertisedAddress=$(hostname -f)::5000 &&
+        command: ["/bin/bash", "-c", 'export NEO4J_dbms_connectors_defaultAdvertisedAddress=$(hostname -f) && export NEO4J_causalClustering_discoveryAdvertisedAddress=$(hostname -f):5000 &&
                                       export NEO4J_causalClustering_transactionAdvertisedAddress=$(hostname -f):6000 && export NEO4J_causalClustering_raftAdvertisedAddress=$(hostname -f):7000 &&
                                       exec /docker-entrypoint.sh "neo4j"']
         ports:
